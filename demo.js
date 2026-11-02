@@ -71,3 +71,51 @@
     goTo(values[key], false);
   });
 })();
+
+// Reuse one player; sound files load only after a visitor chooses a tone.
+(() => {
+  const player = document.getElementById('tone-player');
+  const status = document.getElementById('tone-status');
+  const rows = [...document.querySelectorAll('[data-tone]')];
+  if (!player || !rows.length) return;
+  let active = null;
+  let revision = 0;
+  const stop = () => {
+    revision++;
+    player.pause();
+    active = null;
+    rows.forEach(row => {
+      if (row.dataset.tone !== 'default') {
+        row.setAttribute('aria-pressed', 'false');
+        row.setAttribute('aria-label', 'Play ' + row.firstElementChild.textContent);
+      }
+    });
+  };
+  rows.forEach(row => row.addEventListener('click', async () => {
+    const wasPlaying = active === row;
+    stop();
+    const request = revision;
+    rows.forEach(other => other.dataset.selected = String(other === row));
+    const name = row.firstElementChild.textContent;
+    if (row.dataset.tone === 'default') {
+      status.textContent = 'The system default sound is chosen by iOS on your iPhone.';
+      return;
+    }
+    if (wasPlaying) { status.textContent = name + ' stopped.'; return; }
+    active = row;
+    row.setAttribute('aria-pressed', 'true');
+    row.setAttribute('aria-label', 'Stop ' + name);
+    player.src = './' + row.dataset.tone + '.m4a';
+    try {
+      await player.play();
+      if (revision === request) status.textContent = 'Playing ' + name + '.';
+    } catch (error) {
+      if (revision !== request) return;
+      stop();
+      status.textContent = 'Unable to play ' + name + '. Please try again.';
+    }
+  }));
+  player.addEventListener('ended', () => { stop(); status.textContent = 'Preview finished.'; });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+  window.addEventListener('pagehide', stop);
+})();
