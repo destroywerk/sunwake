@@ -57,6 +57,13 @@
         step.style.setProperty('--copy-block-height', block.offsetHeight + 'px');
         step.style.setProperty('--copy-hold-distance', Math.max(320, innerHeight * 0.5) + 'px');
       });
+      // The final text and sticky phone must release at the same scroll position.
+      const sleepStep = document.getElementById('sleep');
+      const stage = phone.querySelector('.story-stage');
+      const phoneRelease = phone.getBoundingClientRect().bottom + scrollY
+        - stage.offsetHeight - parseFloat(getComputedStyle(stage).top);
+      const sleepStart = sleepStep.getBoundingClientRect().top + scrollY;
+      sleepStep.style.setProperty('--sleep-hold-distance', Math.max(0, phoneRelease - sleepStart) + 'px');
     } else {
       hero.style.removeProperty('--hero-copy-height');
       hero.style.removeProperty('--hero-list-distance');
@@ -82,7 +89,8 @@
     if (!desktop()) return;
     if (manualScene && Math.abs(window.scrollY - manualScroll) > 80) manualScene = null;
     let scene = 'alarms';
-    const line = innerHeight - 24;
+    // Let the next heading move into view before changing the phone screen.
+    const line = innerHeight * 0.68;
     steps.forEach(step => {
       const copy = step.querySelector('.section-copy-block') || heroCopy;
       if (copy.getBoundingClientRect().top <= line) scene = step.dataset.scene;
