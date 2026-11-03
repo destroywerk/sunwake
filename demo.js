@@ -105,7 +105,7 @@
     active = row;
     row.setAttribute('aria-pressed', 'true');
     row.setAttribute('aria-label', 'Stop ' + name);
-    player.src = './' + row.dataset.tone + '.m4a';
+    player.src = './' + row.dataset.tone + '.m4a' + (row.dataset.tone === 'reverie' ? '?v=2' : '');
     try {
       await player.play();
       if (revision === request) status.textContent = 'Playing ' + name + '.';
