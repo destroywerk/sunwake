@@ -86,3 +86,6 @@ html{scroll-behavior:auto}
  .mobile-phone .app-list-scroll{overflow-y:auto;touch-action:pan-y}
  .mobile-phone .tone-row{min-height:0}
 }
+
+/* Clear pricing promise while the site remains a beta invitation. */
+.purchase-promise{font-size:17px;line-height:1.5;margin:0 0 24px;color:var(--text)}.purchase-promise strong{display:block;font-weight:650}.purchase-promise span{display:block;color:var(--muted);font-size:14px;margin-top:3px}.closing .purchase-promise{margin:22px 0 32px;color:var(--text)}
